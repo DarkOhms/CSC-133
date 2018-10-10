@@ -5,6 +5,8 @@ import com.codename1.ui.Form;
 import com.codename1.ui.Label;
 import com.codename1.ui.TextField;
 import com.codename1.ui.events.*;
+import com.codename1.ui.layouts.BorderLayout;
+import com.codename1.ui.layouts.BoxLayout;
 
 public class Game extends Form {
 	private GameWorld gw;
@@ -17,13 +19,18 @@ public class Game extends Form {
 	public Game() {
 		gw = new GameWorld();
 		gw.init();
-		statusView = new Container();
+		statusView = new Container(new BoxLayout(BoxLayout.X_AXIS));
 		mapView = new Container();
-		command = new Container();
-		play();
+		command = new Container(new BoxLayout(BoxLayout.Y_AXIS));
+		setLayout(new BorderLayout());
+		add(BorderLayout.NORTH, statusView);
+		add(BorderLayout.WEST, command);
+		add(BorderLayout.CENTER, mapView);
+		this.show();
+		//play();
 		
 	}
-	
+	/*
 	private void play() {
 		Label myLabel = new Label("Enter a command: ");
 		this.addComponent(myLabel);
@@ -134,7 +141,7 @@ public class Game extends Form {
 			}//end actionPerformed
 		}//end new ActionListener
 		);//end addActionListener
-	}
+	}*/
 	// Quits the game
 	private void quitGame()
 	{

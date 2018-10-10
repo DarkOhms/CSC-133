@@ -4,7 +4,7 @@ import java.util.Observable;
 import java.util.Random;
 import java.util.Vector;
 
-public class GameWorld extends Observable {
+public class GameWorld extends Observable implements IGameWorld {
 	private int XBOUND = 1024;
 	private int YBOUND = 768;
 	private int playerScore;
