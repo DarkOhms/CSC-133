@@ -1,10 +1,11 @@
 package com.mycompany.a2;
 
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Random;
 import java.util.Vector;
 
-public class GameWorld extends Observable implements IGameWorld {
+public class GameWorld extends Observable {
 	private int XBOUND = 1024;
 	private int YBOUND = 768;
 	private int playerScore;
@@ -12,7 +13,9 @@ public class GameWorld extends Observable implements IGameWorld {
 	private int elapsedGameTime;
 	
 	private Random random = new Random();
-	private Vector<GameObject> store = new Vector<GameObject>();
+	//private Vector<GameObject> store = new Vector<GameObject>();
+	
+	private GameObjectsCollection store = new GameObjectsCollection();
 	
 	
 	//methods for generating and checking random locations for new objects
@@ -66,6 +69,7 @@ public class GameWorld extends Observable implements IGameWorld {
 		store.add(asteroid);
 		//print to console
 		System.out.println("A new ASTEROID has been created");
+		update();
 	}
 	
 	public void addPlayerShip() {
@@ -75,6 +79,7 @@ public class GameWorld extends Observable implements IGameWorld {
 		store.add(0,playerShip);
 		//print to console
 		System.out.println("A new PlayerShip has been created");
+		update();
 	}
 	
 	public void addNonPlayerShip() {
@@ -84,6 +89,7 @@ public class GameWorld extends Observable implements IGameWorld {
 		store.add(nonPlayerShip);
 		//print to console
 		System.out.println("A new NonPlayerShip has been created");
+		update();
 	}
 	
 	public void addSpaceStation() {
@@ -95,6 +101,7 @@ public class GameWorld extends Observable implements IGameWorld {
 		store.add(spaceStation);
 		//print to console
 		System.out.println("A new Space Station has been created");
+		update();
 	}
 	
 	//increases player speed if player speed is less than 10
@@ -106,6 +113,7 @@ public class GameWorld extends Observable implements IGameWorld {
 		}else {
 			System.out.println("Speed is at Maximum");
 		}
+		update();
 	}
 	
 	public void decreaseSpeed() {
@@ -118,6 +126,7 @@ public class GameWorld extends Observable implements IGameWorld {
 				System.out.println("Speed is already zero.");
 			}
 		}
+		update();
 	}
 	
 	public void turnLeft() {
@@ -126,6 +135,7 @@ public class GameWorld extends Observable implements IGameWorld {
 			PlayerShip mObj = (PlayerShip)store.elementAt(0);
 			mObj.steer(-1);
 		}
+		update();
 	}
 	
 	public void turnRight() {
@@ -134,6 +144,7 @@ public class GameWorld extends Observable implements IGameWorld {
 			PlayerShip mObj = (PlayerShip)store.elementAt(0);
 			mObj.steer(1);
 		}
+		update();
 	}
 	
 	public void rotateLauncher() {
@@ -142,15 +153,22 @@ public class GameWorld extends Observable implements IGameWorld {
 			MissileLauncher mObj = ((PlayerShip) store.elementAt(0)).getMissileLauncher();
 			mObj.steer(-5);
 		}
+		update();
 	}
 	
 	public void firePlayerMissile() {
 		//we know element 0 is the player ship because on init()
 		//firing a missile adds a Missile object to the GameObjects vector
 		if(store.elementAt(0) instanceof PlayerShip) {
-			MissileLauncher mObj = ((PlayerShip) store.elementAt(0)).getMissileLauncher();
-			store.add(mObj.fireMissile());
+			if(((PlayerShip) store.elementAt(0)).getMissileCount() > 0) {
+				MissileLauncher mObj = ((PlayerShip) store.elementAt(0)).getMissileLauncher();
+				store.add(mObj.fireMissile());
+				System.out.println("Missile Fired");	
+			}else {
+				System.out.println("Out of Missiles!");
+			}
 		}
+		update();
 	}
 	
 	public void fireNonPlayerMissile() {
@@ -164,6 +182,7 @@ public class GameWorld extends Observable implements IGameWorld {
 				System.out.println("No NPS to fire.");
 			}
 		}
+		update();
 	}
 	
 	public void hyperspace() {
@@ -173,6 +192,7 @@ public class GameWorld extends Observable implements IGameWorld {
 			((PlayerShip) store.elementAt(0)).hyperspace();
 			
 		}	
+		update();
 	}
 	
 	public void restockMissiles() {
@@ -181,6 +201,7 @@ public class GameWorld extends Observable implements IGameWorld {
 			((PlayerShip) store.elementAt(0)).reArm();
 			
 		}	
+		update();
 	}
 	
 	public void asteroidKillShot() {
@@ -199,9 +220,10 @@ public class GameWorld extends Observable implements IGameWorld {
 				}//end for loop searching for Asteroids
 			break;
 			}else{
-				System.out.println("There are no missiles");
+				System.out.println("There are no in flight missiles");
 			}
 		}//end for to search for Missiles	
+		update();
 	}
 	
 	public void npsKillShot() {
@@ -222,7 +244,8 @@ public class GameWorld extends Observable implements IGameWorld {
 			}else{
 				System.out.println("There are no missiles");
 			}
-		}//end for to search for Missiles	
+		}//end for to search for Missiles
+		update();
 	}
 	
 	public void playerKillShot() {
@@ -240,7 +263,8 @@ public class GameWorld extends Observable implements IGameWorld {
 			}else{
 				System.out.println("There are no missiles");
 			}
-		}//end for to search for Missiles	
+		}//end for to search for Missiles
+		update();
 	}
 	
 	public void playerCrash() {
@@ -259,6 +283,7 @@ public class GameWorld extends Observable implements IGameWorld {
 				System.out.println("There are no asteroids");
 			}
 		}//end for to search for Asteroids	
+		update();
 	}
 	
 	public void playerNPSCrash() {
@@ -277,6 +302,7 @@ public class GameWorld extends Observable implements IGameWorld {
 				System.out.println("There are no non player ships");
 			}
 		}//end for to search for NonPlayerShips	
+		update();
 	}
 	
 	public void asteroidNPSCollision() {
@@ -297,6 +323,7 @@ public class GameWorld extends Observable implements IGameWorld {
 				System.out.println("There are no non player ships");
 			}
 		}//end for to search for NonPlayerShips	
+		update();
 	}
 	
 	public void asteroidCollision() {
@@ -317,6 +344,7 @@ public class GameWorld extends Observable implements IGameWorld {
 				System.out.println("There aren't any asteroids.");
 			}
 		}//end for to search for NonPlayerShips	
+		update();
 	}
 	
 	public void playerStatus() {
@@ -353,6 +381,7 @@ public class GameWorld extends Observable implements IGameWorld {
 			}//end missile maintenance if
 		}//end iteration
 		elapsedGameTime++;	
+		update();
 	}
 	
 	public void map() {
@@ -367,6 +396,37 @@ public class GameWorld extends Observable implements IGameWorld {
 		addPlayerShip();
 		playerScore = 0;
 		playerLives = 3;
+		update();
+	}
+
+	
+	public Iterator<GameObject> getIterator() {
+		
+		return store.getIterator();
+	}
+
+	public int getPlayerScore() {
+		return playerScore;
+	}
+
+	public int getPlayerLives() {
+		return playerLives;
+	}
+
+	public int getElapsedGameTime() {
+		return elapsedGameTime;
 	}
 	
+	public int getMissiles() {
+		return ((PlayerShip)store.elementAt(0)).getMissileCount();
+	}
+	
+	private void update() {
+		this.setChanged();
+		this.notifyObservers(new ProxyGameWorld(this));
+	}
+
+	
 }
+
+
